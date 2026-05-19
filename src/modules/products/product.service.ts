@@ -1,51 +1,51 @@
-import { Injectable } from "@nestjs/common";
-import { Product } from "../../models/product.model";
-import { ProductDto } from "../../dto/product.dto";
+import { Injectable } from '@nestjs/common';
+import { Product } from '../../models/product.model';
+import { ProductDto } from '../../dto/product.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
-    private products: Product[] = [
-        {id: 1, categoryId: 1, productName: 'Cookie', price: 100},
-        {id: 2, categoryId: 2, productName: 'Candy', price: 50},
-        {id: 3, categoryId: 1, productName: 'Cake', price: 200},
-    ]
 
-    getProducts(): Product[] {
-        return this.products;
+    constructor(
+        @InjectRepository(Product)
+        private readonly productRepository: Repository<Product>,
+    ) {}
+
+    async getProducts(): Promise<Product[]> {
+        return await this.productRepository.find();
     }
 
-    createProduct(productDto: ProductDto): Product {
-        const product: Product = {
-            id: Math.random(),
-            ...productDto
-        };
+    async createProduct(
+        productDto: ProductDto,
+    ): Promise<Product> {
 
-        this.products.push(product);
-        return product;
+        const product =
+            this.productRepository.create(productDto);
+
+        return await this.productRepository.save(product);
     }
 
-    detailProduct(id: number): Product | null {
-        const product = this.products.find(item => item.id === Number(id));
-        return product || null;
+    async detailProduct(
+        id: number,
+    ): Promise<Product | null> {
+
+        return await this.productRepository.findOne({
+            where: { id },
+        });
     }
 
-    updateProduct(id: number, productDto: ProductDto): Product {
-        const index = this.products.findIndex(item => item.id === Number(id));
-        this.products[index].categoryId = productDto.categoryId;
-        this.products[index].productName = productDto.productName;
-        this.products[index].price = productDto.price;
+    async updateProduct(
+        id: number,
+        productDto: ProductDto,
+    ): Promise<Product | null> {
 
-        return this.products[index];
+        await this.productRepository.update(id, productDto);
+
+        return await this.detailProduct(id);
     }
 
-    deleteProduct(id: number): boolean {
-        const index = this.products.findIndex(item => item.id === Number(id));
-
-        if(index !== -1) {   
-            this.products.splice(index, 1);
-            return true;
-        }
-        
-        return false;
+    async deleteProduct(id: number): Promise<void> {
+        await this.productRepository.delete(id);
     }
 }
