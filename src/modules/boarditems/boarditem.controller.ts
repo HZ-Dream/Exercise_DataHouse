@@ -9,30 +9,30 @@ import {
     Put,
 } from '@nestjs/common';
 
-import { ProductService } from './product.service';
+import { BoardItemService } from './boarditem.service';
 import { ResponseData } from '../../global/globalClass';
 import { HttpMessage, HttpStatus } from '../../global/globalEnum';
-import { Product } from '../../models/product.model';
-import { ProductDto } from '../../dto/product.dto';
+import { BoardItem } from '../../models/boarditem.model';
+import { BoardItemDto } from '../../dto/boarditem.dto';
 
-@Controller('products')
-export class ProductController {
+@Controller('board_items')
+export class BoardItemController {
     constructor(
-        private readonly productService: ProductService,
+        private readonly boardItemService: BoardItemService,
     ) {}
 
     @Get()
-    async getProducts(): Promise<ResponseData<Product[]>> {
+    async getBoardItems(): Promise<ResponseData<BoardItem[]>> {
         try {
-            const products = await this.productService.getProducts();
+            const items = await this.boardItemService.getBoardItems();
 
-            return new ResponseData<Product[]>(
-                products,
+            return new ResponseData<BoardItem[]>(
+                items,
                 HttpStatus.SUCCESS,
                 HttpMessage.SUCCESS,
             );
         } catch (error) {
-            return new ResponseData<Product[]>(
+            return new ResponseData<BoardItem[]>(
                 [],
                 HttpStatus.ERROR,
                 HttpMessage.ERROR,
@@ -41,16 +41,16 @@ export class ProductController {
     }
 
     @Post()
-    async createProduct(
-        @Body() productDto: ProductDto,
-    ): Promise<ResponseData<Product>> {
+    async createItem(
+        @Body() boardItemDto: BoardItemDto,
+    ): Promise<ResponseData<BoardItem>> {
 
         try {
-            const product =
-                await this.productService.createProduct(productDto);
+            const item =
+                await this.boardItemService.createItem(boardItemDto);
 
-            return new ResponseData<Product>(
-                product,
+            return new ResponseData<BoardItem>(
+                item,
                 HttpStatus.SUCCESS,
                 HttpMessage.SUCCESS,
             );
@@ -58,7 +58,7 @@ export class ProductController {
         } catch (error) {
             console.log(error);
             
-            return new ResponseData<Product>(
+            return new ResponseData<BoardItem>(
                 [],
                 HttpStatus.ERROR,
                 HttpMessage.ERROR,
@@ -67,15 +67,15 @@ export class ProductController {
     }
 
     @Get(':id')
-    async detailProduct(
+    async detailItem(
         @Param('id', ParseIntPipe) id: number,
-    ): Promise<ResponseData<Product | null>> {
+    ): Promise<ResponseData<BoardItem | null>> {
 
         try {
             const product =
-                await this.productService.detailProduct(id);
+                await this.boardItemService.detailItem(id);
 
-            return new ResponseData<Product | null>(
+            return new ResponseData<BoardItem | null>(
                 product,
                 HttpStatus.SUCCESS,
                 HttpMessage.SUCCESS,
@@ -83,7 +83,7 @@ export class ProductController {
 
         } catch (error) {
 
-            return new ResponseData<Product | null>(
+            return new ResponseData<BoardItem | null>(
                 null,
                 HttpStatus.ERROR,
                 HttpMessage.ERROR,
@@ -92,16 +92,16 @@ export class ProductController {
     }
 
     @Put(':id')
-    async updateProduct(
+    async updateItem(
         @Param('id', ParseIntPipe) id: number,
-        @Body() productDto: ProductDto,
-    ): Promise<ResponseData<Product | null>> {
+        @Body() boardItemDto: Partial<BoardItemDto>,
+    ): Promise<ResponseData<BoardItem | null>> {
 
         try {
             const product =
-                await this.productService.updateProduct(id, productDto);
+                await this.boardItemService.updateItem(id, boardItemDto);
 
-            return new ResponseData<Product | null>(
+            return new ResponseData<BoardItem | null>(
                 product,
                 HttpStatus.SUCCESS,
                 HttpMessage.SUCCESS,
@@ -109,7 +109,7 @@ export class ProductController {
 
         } catch (error) {
 
-            return new ResponseData<Product | null>(
+            return new ResponseData<BoardItem | null>(
                 null,
                 HttpStatus.ERROR,
                 HttpMessage.ERROR,
@@ -118,12 +118,12 @@ export class ProductController {
     }
 
     @Delete(':id')
-    async deleteProduct(
+    async deleteItem(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<ResponseData<boolean>> {
 
         try {
-            await this.productService.deleteProduct(id);
+            await this.boardItemService.deleteItem(id);
 
             return new ResponseData<boolean>(
                 true,
