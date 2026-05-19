@@ -1,0 +1,145 @@
+import type { Column } from '../types/kanban'
+
+export const columns: Column[] = [
+{
+    id: 'todo',
+    title: 'To Do',
+    items: [
+    {
+        id: 'task-1',
+        type: 'task',
+        variant: 'normal',
+        status: 'todo',
+        title: 'Gear up for Mt. Fuji!',
+        description: 'Prepare travel plan and check equipment.',
+        imageUrl:
+        'https://images.unsplash.com/photo-1578637387939-43c525550085?q=80&w=800&auto=format&fit=crop',
+        imageAlt: 'Mount Fuji',
+        date: 'SEP 30, 2021',
+        emoji: '😎',
+        assignees: ['👨🏽‍💻', '👩🏻‍🎨'],
+    },
+    {
+        id: 'task-2',
+        type: 'task',
+        variant: 'normal',
+        status: 'todo',
+        title: 'Draft onboarding documentation for design team.',
+        description: 'Refer documentation templates from company wiki.',
+        date: 'SEP 26, 2021',
+        emoji: '🥵',
+        assignees: ['👩🏻'],
+    },
+    {
+        id: 'note-1',
+        type: 'note',
+        color: 'yellow',
+        content: 'Add a quick note. Or create a simple list:',
+        bullets: ['Item 1', 'Item 2', 'Item 3'],
+    },
+    ],
+},
+{
+    id: 'in-progress',
+    title: 'In Progress',
+    items: [
+    {
+        id: 'task-3',
+        type: 'task',
+        variant: 'normal',
+        status: 'in-progress',
+        title: 'Finalize presentation deck.',
+        bullets: [
+        'Deck theme as per brand guidelines.',
+        'Limit to 12 slides.',
+        'Use images from image bank only.',
+        'Divide amongst presenters. (Not more than two.)',
+        ],
+        date: 'SEP 27, 2021',
+        emoji: '🥵',
+        assignees: ['🧑🏽‍💻', '👨‍🎤'],
+    },
+    {
+        id: 'note-2',
+        type: 'note',
+        color: 'purple',
+        title: 'Upcoming performance reviews:',
+        bullets: [
+        'Jacob ✓',
+        'Aubrey ✓',
+        'Devon (Postponed!)',
+        'Katie',
+        'Bassam',
+        'Gerald',
+        ],
+    },
+    ],
+},
+{
+    id: 'done',
+    title: 'Done',
+    items: [
+    {
+        id: 'task-4',
+        type: 'task',
+        variant: 'normal',
+        status: 'done',
+        title: 'Progress meeting with Jason.',
+        description: 'Take notes. Ask questions after.',
+        date: 'SEP 25, 2021',
+        emoji: '🥵',
+        assignees: ['👨🏾‍💼', '👩🏻‍🎤'],
+    },
+    {
+        id: 'note-3',
+        type: 'note',
+        color: 'green',
+        content:
+        'Log-in extra hours on company portal. Refer your personal Notion database for hours worked.',
+    },
+    {
+        id: 'task-5',
+        type: 'task',
+        variant: 'normal',
+        status: 'done',
+        title: 'Update travel mood-board with pics.',
+        description: 'Link here.',
+        imageUrl:
+        'https://images.unsplash.com/photo-1526481280693-3bfa7568e0f3?q=80&w=800&auto=format&fit=crop',
+        imageAlt: 'Travel mood board',
+        date: 'SEP 25, 2021',
+        emoji: '😎',
+        assignees: ['👩🏻'],
+    },
+    ],
+},
+{
+    id: 'archive',
+    title: 'Archive',
+    items: [
+    {
+        id: 'task-6',
+        type: 'task',
+        variant: 'compact',
+        status: 'archive',
+        title: 'Schedule 1-on-1 with team.',
+        date: 'SEP 20, 2021',
+        emoji: '😎',
+        assignees: ['👩🏽'],
+    },
+    {
+        id: 'note-4',
+        type: 'note',
+        color: 'blue',
+        title: 'DON’T FORGET TO MEDITATE!',
+    },
+    {
+        id: 'note-5',
+        type: 'note',
+        color: 'yellow',
+        content: 'Inbox ZERO! (Every Fri-yay!)',
+        bullets: ['💃 💃 💃'],
+    },
+    ],
+},
+]
