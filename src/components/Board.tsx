@@ -72,17 +72,6 @@ export default function Board() {
 
     return null;
   };
-  const syncColumnItemsToApi = async (column: Column) => {
-    await Promise.all(
-      column.items.map((item, index) => {
-        const data = item.type === 'task'
-          ? { columnId: column.id, status: column.id, order: index + 1 }
-          : { columnId: column.id, order: index + 1 }
-
-        return updateItemApi(item.id, data)
-      })
-    )
-  }
 
   const handleDragStart = (event: DragStartEvent) => {
     const itemId = String(event.active.id);
@@ -148,7 +137,11 @@ export default function Board() {
 
       setColumns(nextColumns);
 
-      void syncColumnItemsToApi(updatedColumn);
+      const movedItem = updatedColumn.items[overItemIndex]
+
+      void updateItemApi(movedItem.id, {
+        order: overItemIndex + 1,
+      })
 
       return;
     }
@@ -192,9 +185,16 @@ export default function Board() {
 
     setColumns(nextColumns);
 
-    void syncColumnItemsToApi(updatedSourceColumn);
-    void syncColumnItemsToApi(updatedTargetColumn);
+    void updateItemApi(activeId, {
+      columnId: targetColumn.id,
+      order: insertIndex + 1,
+
+      ...(activeItemData.type === "task"
+        ? { status: targetColumn.id }
+        : {}),
+    });
   };
+
   if (loading) {
     return <p className="text-slate-500">Loading board...</p>;
   }
