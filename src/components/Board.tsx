@@ -95,10 +95,6 @@ export default function Board() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-
-      console.log('active.id:', active.id, typeof active.id)
-      console.log('over.id:', over?.id, typeof over?.id)
-      
       if (!over) {
         console.log('over is null - dropped outside')
         return

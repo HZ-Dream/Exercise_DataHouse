@@ -51,11 +51,9 @@ export async function getColumnsApi(): Promise<ApiColumn[]> {
 }
 
 export async function getItemsApi(): Promise<ApiKanbanItem[]> {
-  const response = await request<{ data: ApiKanbanItem[] }>(
+  return request<ApiKanbanItem[]>(
     `${API_URL}/board_items`,
   )
-
-  return response.data
 }
 
 export async function getBoardApi(): Promise<Column[]> {
