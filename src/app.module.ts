@@ -3,19 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductModule } from './modules/products/product.module';
-// import { ProductModule } from './modules/products/product.module';
+import { AppDataSource } from './data-source';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '123',
-      database: 'nest_api_db',
-      autoLoadEntities: true,
-      synchronize: true
+      ...AppDataSource.options, 
+      autoLoadEntities: true,  
     }),
 
     ProductModule,
