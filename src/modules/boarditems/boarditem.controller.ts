@@ -9,108 +9,67 @@ import {
     Put,
 } from '@nestjs/common';
 
-import { BoardItemService } from './boarditem.service';
 import { ResponseData } from '../../global/globalClass';
 import { HttpMessage, HttpStatus } from '../../global/globalEnum';
 import { BoardItem } from '../../models/boarditem.model';
 import { BoardItemDto } from '../../dto/boarditem.dto';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+
+// Query
+import { GetAllBoardItemsQuery } from './queries/get-all-boarditems/get-all-boarditems.query';
+import { GetDetailBoardItemQuery } from './queries/get-detail-boarditem/get-detail-boarditem.query';
+import { CreateBoardItemCommand } from './commands/create-boarditem/create-boarditem.command';
+import { UpdateBoardItemCommand } from './commands/update-boarditem/update-boarditem.command';
+import { DeleteBoardItemCommand } from './commands/delete-boarditem/delete-boarditem.command';
 
 @Controller('board_items')
 export class BoardItemController {
+    // Inject CommandBus & QueryBus
     constructor(
-        private readonly boardItemService: BoardItemService,
+        private readonly queryBus: QueryBus,
+        private readonly commandBus: CommandBus,
     ) {}
 
+    // Query
     @Get()
-    async getBoardItems(): Promise<ResponseData<BoardItem[]>> {
-        try {
-            const items = await this.boardItemService.getBoardItems();
-
-            return new ResponseData<BoardItem[]>(
-                items,
-                HttpStatus.SUCCESS,
-                HttpMessage.SUCCESS,
-            );
-        } catch (error) {
-            return new ResponseData<BoardItem[]>(
-                [],
-                HttpStatus.ERROR,
-                HttpMessage.ERROR,
-            );
-        }
-    }
-
-    @Post()
-    async createItem(
-        @Body() boardItemDto: BoardItemDto,
-    ): Promise<ResponseData<BoardItem>> {
-
-        try {
-            const item =
-                await this.boardItemService.createItem(boardItemDto);
-
-            return new ResponseData<BoardItem>(
-                item,
-                HttpStatus.SUCCESS,
-                HttpMessage.SUCCESS,
-            );
-
-        } catch (error) {
-            console.log(error);
-            
-            return new ResponseData<BoardItem>(
-                [],
-                HttpStatus.ERROR,
-                HttpMessage.ERROR,
-            );
-        }
+    async getAllBoardItems() {
+        return await this.queryBus.execute(new GetAllBoardItemsQuery);
     }
 
     @Get(':id')
-    async detailItem(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<ResponseData<BoardItem | null>> {
+    async getDetailBoardItem(
+        @Param('id') id: number
+    ) {
+        return await this.queryBus.execute(new GetDetailBoardItemQuery(id));
+    }
 
-        try {
-            const product =
-                await this.boardItemService.detailItem(id);
+    // Command
+    @Post()
+    async createBoardItem(
+        @Body() boardItemDto: BoardItemDto
+    ): Promise<ResponseData<BoardItem>> {
+        const result = await this.commandBus.execute<CreateBoardItemCommand, BoardItem>(
+            new CreateBoardItemCommand(boardItemDto)
+        );
 
-            return new ResponseData<BoardItem | null>(
-                product,
-                HttpStatus.SUCCESS,
-                HttpMessage.SUCCESS,
-            );
-
-        } catch (error) {
-
-            return new ResponseData<BoardItem | null>(
-                null,
-                HttpStatus.ERROR,
-                HttpMessage.ERROR,
-            );
-        }
+        return new ResponseData(result, HttpStatus.SUCCESS, HttpMessage.SUCCESS);
     }
 
     @Put(':id')
-    async updateItem(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() boardItemDto: Partial<BoardItemDto>,
-    ): Promise<ResponseData<BoardItem | null>> {
-
-        try {
-            const product =
-                await this.boardItemService.updateItem(id, boardItemDto);
-
-            return new ResponseData<BoardItem | null>(
-                product,
-                HttpStatus.SUCCESS,
-                HttpMessage.SUCCESS,
+    async updateBoardItem(
+        @Param('id') id: number,
+        @Body() boardItemDto: BoardItemDto
+    ): Promise<ResponseData<BoardItem>> {
+        try {            
+            const result = await this.commandBus.execute<UpdateBoardItemCommand, BoardItem>(
+                new UpdateBoardItemCommand(id, boardItemDto)
             );
-
+    
+            return new ResponseData(result, HttpStatus.SUCCESS, HttpMessage.SUCCESS);
         } catch (error) {
-
-            return new ResponseData<BoardItem | null>(
-                null,
+            console.log(error);
+            return new ResponseData<BoardItem>(
+                [],
                 HttpStatus.ERROR,
                 HttpMessage.ERROR,
             );
@@ -118,22 +77,18 @@ export class BoardItemController {
     }
 
     @Delete(':id')
-    async deleteItem(
-        @Param('id', ParseIntPipe) id: number,
+    async deleteBoardItem(
+        @Param('id') id: number
     ): Promise<ResponseData<boolean>> {
-
-        try {
-            await this.boardItemService.deleteItem(id);
-
-            return new ResponseData<boolean>(
-                true,
-                HttpStatus.SUCCESS,
-                HttpMessage.SUCCESS,
+        try {            
+            await this.commandBus.execute<DeleteBoardItemCommand, BoardItem>(
+                new DeleteBoardItemCommand(id)
             );
-
+    
+            return new ResponseData(true, HttpStatus.SUCCESS, HttpMessage.SUCCESS);
         } catch (error) {
-
-            return new ResponseData<boolean>(
+            console.log(error);
+            return new ResponseData(
                 false,
                 HttpStatus.ERROR,
                 HttpMessage.ERROR,
